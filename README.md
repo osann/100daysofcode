@@ -13,9 +13,9 @@ looking to improve my skills, not flaunt them.
 	To initiate the class, you must declare a background. This can be done like the way
 	it is done in the program test, at the bottom. It looks like this:
 	
-	O = (0, 49, 83)									As you can see, the background is drawn in the program.
-	X = (70, 130, 180)							It must be drawn in a 64 pixel grid, otherwise it wont
-	waves_background = [						execute. If you know the syntax for the Sense HAT this
+	O = (0, 49, 83)				As you can see, the background is drawn in the program.
+	X = (70, 130, 180)			It must be drawn in a 64 pixel grid, otherwise it wont
+	waves_background = [			execute. If you know the syntax for the Sense HAT this
     	O, X, O, O, O, O, O, O,			will be familiar.
     	O, X, O, O, X, O, O, X,
     	O, O, X, O, X, O, O, X,
