@@ -4,11 +4,12 @@
 # The goal of this class is to control an LED on the Sense HAT module for the
 # Raspberry Pi.
 # This class simply waits for events from the Sense HAT joystick, then increases
-# or decreases a coordinate for the LED matrix on the HAT. 
+# or decreases a coordinate for the LED matrix on the HAT.
 # Known bugs to fix:
 # - When held, continues being held **FIXED**
+# - Cursor replaces the led underneath with default colour **FIXED**
 # Left to add:
-# - Ways to make the class implementable to other programs
+# - Ways to make the class implementable to other programs **DONE**
 # ==========================================================================================
 
 from sense_hat import SenseHat
@@ -16,14 +17,19 @@ from time import sleep
 
 sense = SenseHat()
 class JoystickLed(object):
-    currentPos = [1, 1] # Coordinates
-    led_colour = (255, 255, 255) # Sets the colour of the led highlight, currently white
-    background_colour = (0, 0, 0) # Sets the colour of the background, currently nothing
+    currentPos = [0, 0] # Starting coordinates
+    highlight_col = (0, 0, 0) # Highligher colour, specified in init
+    background = [] # Stores the background, specified in the init
     exit = False # Boolean to handle exit
 
     # Initiate, currently does nothing
-    def __init__(self):
-        sense.set_pixel(self.currentPos[0], self.currentPos[1], self.led_colour)
+    def __init__(self, highlight_col = (255, 255, 255), background = [], start_pos = [0, 0]):
+        self.highlight_col = highlight_col
+        self.background = background
+        self.currentPos = start_pos
+
+        sense.set_pixels(background)
+        sense.set_pixel(self.currentPos[0], self.currentPos[1], highlight_col)
 
     # Represent, returns led position
     def __repr__(self):
@@ -60,12 +66,10 @@ class JoystickLed(object):
     # Joystick move function
     # Work in conjunction with above functions
     def move(self):
-        tempPos = self.currentPos # Stores last LED coordinates
-        temp_colour = self.background_colour # Stores the current background colour
         event = sense.stick.wait_for_event()
 
         if (event.action == "pressed" or event.action == "held") and event.action != "released":
-            sense.set_pixel(tempPos[0], tempPos[1], temp_colour)
+            sense.set_pixels(self.background)
             if event.direction == "up":
                 self.led_up()
             if event.direction == "down":
@@ -77,10 +81,25 @@ class JoystickLed(object):
             if event.direction == "middle":
                 self.exit = True
             print("Went %s" % event.direction)
-        sense.set_pixel(self.currentPos[0], self.currentPos[1], self.led_colour)
+        sense.set_pixel(self.currentPos[0], self.currentPos[1], self.highlight_col)
 # ===================
 # End of class
-test = JoystickLed()
+
+
+O = (0, 49, 83)
+X = (70, 130, 180)
+flat_background = [
+    O, X, O, O, O, O, O, O,
+    O, X, O, O, X, O, O, X,
+    O, O, X, O, X, O, O, X,
+    O, O, X, O, O, X, O, O,
+    O, O, X, O, O, X, O, O,
+    O, X, O, O, O, X, O, O,
+    O, X, O, O, X, O, O, X,
+    O, O, O, O, X, O, O, X
+    ]
+
+test = JoystickLed((247, 32, 32), flat_background)
 while test.exit != True:
     test.move()
 sense.clear()
