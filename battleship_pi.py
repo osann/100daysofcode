@@ -45,19 +45,15 @@ class JoystickLed(object):
     def led_down(self):
         if self.currentPos[1] < 7:
             self.currentPos[1] += 1
-            print(self.currentPos)
     def led_up(self):
         if self.currentPos[1] > 0:
             self.currentPos[1] -= 1
-            print(self.currentPos)
     def led_right(self):
         if self.currentPos[0] < 7:
             self.currentPos[0] += 1
-            print(self.currentPos)
     def led_left(self):
         if self.currentPos[0] > 0:
             self.currentPos[0] -= 1
-            print(self.currentPos)
     # End of LED move functions
     # ==========================================================================================
     
@@ -78,25 +74,14 @@ class JoystickLed(object):
                 self.led_left()
             if event.direction == "middle":
                 self.guessed = True
-            print("Went %s" % event.direction)
         sense.set_pixel(self.currentPos[0], self.currentPos[1], self.highlight_col)
+
+    def get_pos(self):
+        return self.currentPos
 # ===================
 # End of class
 # ===================
 # Start main method
-
-O = (0, 49, 83)
-X = (70, 130, 180)
-water_background = [
-    O, X, O, O, O, O, O, O,
-    O, X, O, O, X, O, O, X,
-    O, O, X, O, X, O, O, X,
-    O, O, X, O, O, X, O, O,
-    O, O, X, O, O, X, O, O,
-    O, X, O, O, O, X, O, O,
-    O, X, O, O, X, O, O, X,
-    O, O, O, O, X, O, O, X
-    ]
 
 def gen_ship():
     ship = []
@@ -118,24 +103,68 @@ def gen_ship():
     print(ship) # Testing purposes
     return ship
 
-    
+def update_background_w_hit(coordinates, background, colour = (0, 0, 0)):
+    grid = [background[0: 8],
+            background[8: 16],
+            background[16: 24],
+            background[24: 32],
+            background[32: 40],
+            background[40: 48],
+            background[48: 56],
+            background[56: 64]
+            ] # Splits the list of 64 tuples into an 8 x 8 matrix of tuples
+            # This is how to make the grid addressable by coordinates
+
+    grid[coordinates[1]][coordinates[0]] = colour
+    return grid
+
+def hit_marker(coordinates):
+    guessed_coordinates = []
+
+    if coordinates in guessed_coordinates:
+        print("Already guessed here!")
+    else:
+        guessed_coordinates.append(coordinates)
+        water_background = update_background_w_hit(coordinates, water_background, (127, 42, 73))
+
+
 def start_game():
     #sense.show_message("Welcome to battleship! Place your guess.") << Uncomment this before final version
     ship = gen_ship()
     hitcount = 0
     cursor = JoystickLed((255, 0, 0), water_background, [3, 3])
+    win = False
 
     for guess in range(0, 10):
         while cursor.guessed != True:
             cursor.move()
-        print("Guess at: " + cursor.currentPos)
-        if guess in ship:
+        print("Guess at: " + str(cursor.get_pos()))
+        if cursor.currentPos in ship:
             print("Hit")
             hitcount += 1
         if hitcount == 3:
+            sleep(1)
+            win = True
             break
         cursor.guessed = False
     
-    sense.show_message("You win!")
+    if win == True:
+        sense.show_message("You win!")
+    else:
+        sense.show_message("Good try! You got %s hits!" % (str(hitcount)))
 
+# ==========================================================================================
+# Main
+O = (0, 49, 83)
+X = (70, 130, 180)
+water_background = [
+    O, X, O, O, O, O, O, O,
+    O, X, O, O, X, O, O, X,
+    O, O, X, O, X, O, O, X,
+    O, O, X, O, O, X, O, O,
+    O, O, X, O, O, X, O, O,
+    O, X, O, O, O, X, O, O,
+    O, X, O, O, X, O, O, X,
+    O, O, O, O, X, O, O, X
+    ]
 start_game()
