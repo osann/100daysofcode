@@ -49,6 +49,9 @@ class Cursor(object):
     # middle_button() : Handles middle button input
     def middle_button(self):
         self.middle_pressed = True
+    # middle_status() : Returns middle_pressed value
+    def middle_status(self):
+        return self.middle_pressed
 
     # ************************
     # LED Move Functions
@@ -69,7 +72,7 @@ class Cursor(object):
         input = sense.stick.wait_for_event()
 
         if (input.action == "pressed" or input.action == "held") and input.action != "released":
-            self.undraw_cursor()
+            sense.clear()
             if input.direction == "up":
                 self.led_up()
             elif input.direction == "down":
@@ -84,5 +87,84 @@ class Cursor(object):
     # End : LED Movement
     # ************************
 
-cursor = Cursor()
-cursor.selector()
+# ************************
+# Class GridMask
+# Goal: Layers a grid over the background of the game
+class GridMask(object):
+    #Class variables
+    x_list = []
+    y_list = []
+    colour = (255, 0, 0)
+
+    def __init__(self, mask_colour = (255, 0, 0)):
+        self.colour = mask_colour
+
+    def change_colour(self, mask_colour):
+        self.colour = mask_colour
+
+    def add_coordinates(self, x_coordinate, y_coordinate):
+        self.x_list.append(x_coordinate)
+        self.y_list.append(y_coordinate)
+    
+    def reset_mask(self):
+        self.x_list.clear()
+        self.y_list.clear()
+        print("X, Y cleaned")
+
+    def display_mask(self):
+        for x in range(0, len(self.x_list)):
+            sense.set_pixel(self.x_list[x], self.y_list[x], self.colour)
+    # End : GridMask
+    # ************************
+
+# ************************
+# Class Ship
+# Goal: Functioning ship entity
+class Ship(object):
+    #Class variables
+    ship = []
+    
+    def gen_ship(self):
+        self.ship.append([(random.randint(0, 7)), (random.randint(0,7))])
+        orientation = random.randint(0, 1)
+
+        if orientation == 1:            # X orientation
+            if self.ship[0][0] >= 6:    # Lowers the random int for Y coord by 3 to prevent ship falling off matrix
+                self.ship[0][1] -= 3
+            for i in range(0,2):
+                self.ship.append([self.ship[i][0] + 1, self.ship[0][1]])
+        else:                           # Y orientation
+            if self.ship[0][1] >= 6:    # Lowers the random int for Y coord by 3 to prevent ship falling off matrix
+                self.ship[0][1] -= 3
+            for i in range(0, 2):
+                self.ship.append([self.ship[0][0], self.ship[i][1] + 1])
+
+        print(self.ship) # <<<< Testing purpose
+        return self.ship
+    # End : Ship
+    # ************************
+
+# ************************
+# Main
+# Init objects, variables
+cursor = Cursor((255, 255, 255), 4, 4)
+mask = GridMask((255, 0, 0))
+ship = Ship()
+hitcount = 0
+
+# Functions
+# hit_mark : Adds guess coordinates to mask object
+def hit_mark():
+    cursor_pos = cursor.get_position()
+    mask.add_coordinates(cursor_pos[0], cursor_pos[1])
+# guess_loop() : Handles the loop for guesses
+def guess_loop():
+    for guess in range(0, 10):
+        print("Guesses left: %0d" % ((10 - guess)))
+    while cursor.middle_status != True:
+        cursor.movement_handler()
+    print("Guess at: " + str(cursor.get_position))
+    if cursor.get_position() in ship.ship:
+        print("Hit at: %0d" % (cursor.get_position()))
+        hitcount += 1
+    hit_mark()
