@@ -105,15 +105,18 @@ class GridMask(object):
     def add_coordinates(self, x_coordinate, y_coordinate):
         self.x_list.append(x_coordinate)
         self.y_list.append(y_coordinate)
-    
+
     def reset_mask(self):
-        self.x_list.clear()
-        self.y_list.clear()
+        del self.x_list[:]
+        del self.y_list[:]
         print("X, Y cleaned")
 
     def display_mask(self):
-        for x in range(0, len(self.x_list)):
-            sense.set_pixel(self.x_list[x], self.y_list[x], self.colour)
+        if len(self.x_list) > 0:
+            for x in range(0, len(self.x_list)):
+                sense.set_pixel(self.x_list[x], self.y_list[x], self.colour)
+        else:
+            print("Nothing in GridMask: x_list")
     # End : GridMask
     # ************************
 
@@ -123,7 +126,7 @@ class GridMask(object):
 class Ship(object):
     #Class variables
     ship = []
-    
+    # gen_ship() : Generates a ship on an 8 x 8 grid
     def gen_ship(self):
         self.ship.append([(random.randint(0, 7)), (random.randint(0,7))])
         orientation = random.randint(0, 1)
@@ -141,6 +144,10 @@ class Ship(object):
 
         print(self.ship) # <<<< Testing purpose
         return self.ship
+    # display_ship() : Displays the ship on the grid
+    def display_ship(self, ship_colour = (0, 255, 0)):
+        for coordinate in self.ship:
+            sense.set_pixel(coordinate[0], coordinate[1], ship_colour)
     # End : Ship
     # ************************
 
@@ -151,9 +158,10 @@ cursor = Cursor((255, 255, 255), 4, 4)
 mask = GridMask((255, 0, 0))
 ship = Ship()
 hitcount = 0
+guesses = []
 
 # Functions
-# hit_mark : Adds guess coordinates to mask object
+# hit_mark() : Adds guess coordinates to mask object
 def hit_mark():
     cursor_pos = cursor.get_position()
     mask.add_coordinates(cursor_pos[0], cursor_pos[1])
@@ -163,8 +171,23 @@ def guess_loop():
         print("Guesses left: %0d" % ((10 - guess)))
     while cursor.middle_status != True:
         cursor.movement_handler()
-    print("Guess at: " + str(cursor.get_position))
+    print("Guess at: " + str(cursor.get_position()))
+    guesses.append(cursor.get_position())
     if cursor.get_position() in ship.ship:
         print("Hit at: %0d" % (cursor.get_position()))
         hitcount += 1
     hit_mark()
+# check_win() : Checks to see if all the values in ship have been guessed
+def check_win():
+    for guess in guesses:
+        if guess == ship.ship[0]:
+            hit0 = True
+        if guess == ship.ship[1]:
+            hit1 = True
+        if guess == ship.ship[2]:
+            hit2 = True
+    if hit0 and hit1 and hit2:
+        win = True
+    else:
+        win = False
+    return win
