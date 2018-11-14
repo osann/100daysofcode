@@ -72,7 +72,6 @@ class Cursor(object):
         input = sense.stick.wait_for_event()
 
         if (input.action == "pressed" or input.action == "held") and input.action != "released":
-            sense.clear()
             if input.direction == "up":
                 self.led_up()
             elif input.direction == "down":
@@ -83,7 +82,6 @@ class Cursor(object):
                 self.led_right()
             else:
                 self.middle_button()
-        self.draw_cursor()
     # End : LED Movement
     # ************************
 
@@ -171,6 +169,7 @@ def guess_loop():
         print("Guesses left: %0d" % ((10 - guess)))
     while cursor.middle_status != True:
         cursor.movement_handler()
+        draw_game()
     print("Guess at: " + str(cursor.get_position()))
     guesses.append(cursor.get_position())
     if cursor.get_position() in ship.ship:
@@ -191,3 +190,10 @@ def check_win():
     else:
         win = False
     return win
+# draw_game() : Renders the game on the HAT
+def draw_game():
+    mask.display_mask()
+    cursor.draw_cursor()
+# start_game() : Plays the game
+def start_game():
+    pass
