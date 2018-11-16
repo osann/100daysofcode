@@ -1,0 +1,9 @@
+X = (000, 000, 255)
+O = (000, 255, 000)
+P = (255, 000, 000)
+
+X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X
+X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X
+O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X
+O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O
+P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O, P, P, X, X, X, X, O, O
